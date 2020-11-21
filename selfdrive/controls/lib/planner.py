@@ -82,14 +82,14 @@ class Planner():
     self.params = Params()
     self.first_loop = True
 
-  def choose_solution(self, v_cruise_setpoint, enabled):
+  def choose_solution(self, v_cruise_setpoint, enabled, model_enabled):
     if enabled:
       solutions = {'cruise': self.v_cruise}
       if self.mpc1.prev_lead_status:
         solutions['mpc1'] = self.mpc1.v_mpc
       if self.mpc2.prev_lead_status:
         solutions['mpc2'] = self.mpc2.v_mpc
-      if self.mpc_model.valid:
+      if self.mpc_model.valid and model_enabled:
         solutions['model'] = self.mpc_model.v_mpc
 
       slowest = min(solutions, key=solutions.get)
@@ -202,7 +202,7 @@ class Planner():
                           speeds,
                           accelerations)
 
-    self.choose_solution(v_cruise_setpoint, enabled)
+    self.choose_solution(v_cruise_setpoint, enabled, sm['modelLongButton'].enabled)
 
     # determine fcw
     if self.mpc1.new_lead:
